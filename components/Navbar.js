@@ -39,6 +39,12 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-3 md:flex">
           <a
+            href="/register"
+            className="text-sm font-medium text-ink/70 transition-colors hover:text-forest"
+          >
+            Create account
+          </a>
+          <a
             href="#list"
             className="text-sm font-medium text-ink/70 transition-colors hover:text-forest"
           >
@@ -76,6 +82,13 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
+            <a
+              href="/register"
+              className="text-sm font-medium text-ink/80"
+              onClick={() => setOpen(false)}
+            >
+              Create account
+            </a>
             <a
               href="#contact"
               className="mt-2 rounded-full bg-forest px-5 py-3 text-center text-sm font-medium text-cream"
