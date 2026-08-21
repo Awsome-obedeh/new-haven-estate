@@ -144,7 +144,7 @@ export default function RegisterForm() {
       <button type="submit" className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-forest px-6 py-3.5 text-sm font-medium text-cream transition-colors hover:bg-forest-light">
         Create my account <ArrowRight size={16} />
       </button>
-      <p className="mt-5 text-center text-xs text-ink/45">Already have an account? <a href="#sign-in" className="font-semibold text-forest hover:text-forest-light">Sign in</a></p>
+      <p className="mt-5 text-center text-xs text-ink/45">Already have an account? <a href="/login" className="font-semibold text-forest hover:text-forest-light">Sign in</a></p>
     </form>
   );
 }
