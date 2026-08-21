@@ -79,7 +79,7 @@ export default function LoginForm() {
         </div>
       </div>
 
-      <button type="submit" className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-forest px-6 py-3.5 text-sm font-medium text-cream transition-colors hover:bg-forest-light">
+      <button type="submit" className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-red-600 px-6 py-3.5 text-sm font-medium text-cream transition-colors hover:bg-red-700">
         Sign in <ArrowRight size={16} />
       </button>
       <p className="mt-5 text-center text-xs text-ink/45">New to Haven? <a href="/register" className="font-semibold text-forest hover:text-forest-light">Create an account</a></p>
