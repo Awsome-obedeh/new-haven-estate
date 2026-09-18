@@ -33,6 +33,19 @@ export default function LoginForm() {
     event.preventDefault();
     const nextErrors = validate(values);
     setErrors(nextErrors);
+    if (Object.keys(nextErrors).length === 0) {
+      let storedUser = {};
+      try {
+        storedUser = JSON.parse(window.localStorage.getItem("haven-user")) || {};
+      } catch {
+        storedUser = {};
+      }
+      window.localStorage.setItem("haven-user", JSON.stringify({
+        name: storedUser.name || values.email.split("@")[0],
+        email: values.email,
+        role: storedUser.role || "buyer",
+      }));
+    }
     setSubmitted(Object.keys(nextErrors).length === 0);
   }
 
@@ -44,8 +57,8 @@ export default function LoginForm() {
         </span>
         <h2 className="mt-6 font-display text-3xl text-forest">Welcome back.</h2>
         <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-ink/65">You&apos;re signed in and ready to continue your property search.</p>
-        <a href="/" className="mt-8 inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-medium text-cream hover:bg-forest-light">
-          Explore properties <ArrowRight size={16} />
+        <a href="/dashboard" className="mt-8 inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-medium text-cream hover:bg-forest-light">
+          Open dashboard <ArrowRight size={16} />
         </a>
       </div>
     );
