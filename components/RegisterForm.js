@@ -10,6 +10,7 @@ const initialValues = {
   phone: "",
   password: "",
   confirmPassword: "",
+  role: "buyer",
   terms: false,
 };
 
@@ -83,31 +84,14 @@ export default function RegisterForm() {
     event.preventDefault();
     const nextErrors = validate(values);
     setErrors(nextErrors);
-    setSubmitted(false);
-    setServerError("");
-
-    if (Object.keys(nextErrors).length > 0) return;
-
-    setIsSubmitting(true);
-    try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-      const result = await response.json();
-
-      if (!response.ok) {
-        setServerError(result.error || "We could not create your account.");
-        return;
-      }
-
-      setSubmitted(true);
-    } catch {
-      setServerError("We could not reach Haven. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+    if (Object.keys(nextErrors).length === 0) {
+      window.localStorage.setItem("haven-user", JSON.stringify({
+        name: `${values.firstName} ${values.lastName}`,
+        email: values.email,
+        role: values.role,
+      }));
     }
+    setSubmitted(Object.keys(nextErrors).length === 0);
   }
 
   if (submitted) {
@@ -120,8 +104,8 @@ export default function RegisterForm() {
         <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-ink/65">
           Your account is ready. We&apos;ll use {values.email} to share properties that fit your plans.
         </p>
-        <a href="/" className="mt-8 inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-medium text-cream hover:bg-forest-light">
-          Explore properties <ArrowRight size={16} />
+        <a href="/dashboard" className="mt-8 inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-medium text-cream hover:bg-forest-light">
+          Open dashboard <ArrowRight size={16} />
         </a>
       </div>
     );
@@ -134,6 +118,22 @@ export default function RegisterForm() {
         <Field label="Last name" name="lastName" value={values.lastName} onChange={handleChange} error={errors.lastName} placeholder="Okafor" />
         <Field label="Email address" name="email" type="email" value={values.email} onChange={handleChange} error={errors.email} placeholder="you@example.com" icon={Mail} />
         <Field label="Phone number" name="phone" type="tel" value={values.phone} onChange={handleChange} error={errors.phone} placeholder="+234 800 000 0000" />
+        <div className="sm:col-span-2">
+          <p className="mb-2 text-sm font-medium text-ink">I am joining Haven as</p>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              { value: "buyer", label: "Buyer", description: "Find your next home" },
+              { value: "agent", label: "Agent", description: "Manage your listings" },
+              { value: "landlord", label: "Landlord", description: "Share your property" },
+            ].map((option) => (
+              <label key={option.value} className={`cursor-pointer rounded-xl border px-4 py-3 transition-colors ${values.role === option.value ? "border-forest bg-forest/5" : "border-forest/15 hover:border-forest/35"}`}>
+                <input type="radio" name="role" value={option.value} checked={values.role === option.value} onChange={handleChange} className="sr-only" />
+                <span className="block text-sm font-semibold text-forest">{option.label}</span>
+                <span className="mt-1 block text-xs text-ink/55">{option.description}</span>
+              </label>
+            ))}
+          </div>
+        </div>
         <div>
           <label htmlFor="password" className="mb-2 block text-sm font-medium text-ink">Password</label>
           <div className="relative">
@@ -170,8 +170,7 @@ export default function RegisterForm() {
       <button type="submit" disabled={isSubmitting} className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-forest px-6 py-3.5 text-sm font-medium text-cream transition-colors hover:bg-forest-light disabled:cursor-wait disabled:opacity-70">
         {isSubmitting ? "Creating account..." : "Create my account"} {!isSubmitting && <ArrowRight size={16} />}
       </button>
-      {serverError && <p role="alert" className="mt-3 text-center text-sm text-clay">{serverError}</p>}
-      <p className="mt-5 text-center text-xs text-ink/45">Already have an account? <a href="#sign-in" className="font-semibold text-forest hover:text-forest-light">Sign in</a></p>
+      <p className="mt-5 text-center text-xs text-ink/45">Already have an account? <a href="/login" className="font-semibold text-forest hover:text-forest-light">Sign in</a></p>
     </form>
   );
 }
