@@ -69,6 +69,8 @@ export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [serverError, setServerError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function handleChange(event) {
     const { name, value, checked, type } = event.target;
@@ -77,11 +79,35 @@ export default function RegisterForm() {
     setSubmitted(false);
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     const nextErrors = validate(values);
     setErrors(nextErrors);
-    setSubmitted(Object.keys(nextErrors).length === 0);
+    setSubmitted(false);
+    setServerError("");
+
+    if (Object.keys(nextErrors).length > 0) return;
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        setServerError(result.error || "We could not create your account.");
+        return;
+      }
+
+      setSubmitted(true);
+    } catch {
+      setServerError("We could not reach Haven. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -141,9 +167,10 @@ export default function RegisterForm() {
         {errors.terms && <p className="mt-1.5 text-xs text-clay">{errors.terms}</p>}
       </div>
 
-      <button type="submit" className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-forest px-6 py-3.5 text-sm font-medium text-cream transition-colors hover:bg-forest-light">
-        Create my account <ArrowRight size={16} />
+      <button type="submit" disabled={isSubmitting} className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-forest px-6 py-3.5 text-sm font-medium text-cream transition-colors hover:bg-forest-light disabled:cursor-wait disabled:opacity-70">
+        {isSubmitting ? "Creating account..." : "Create my account"} {!isSubmitting && <ArrowRight size={16} />}
       </button>
+      {serverError && <p role="alert" className="mt-3 text-center text-sm text-clay">{serverError}</p>}
       <p className="mt-5 text-center text-xs text-ink/45">Already have an account? <a href="#sign-in" className="font-semibold text-forest hover:text-forest-light">Sign in</a></p>
     </form>
   );

@@ -69,3 +69,17 @@ same shape:
   swap the `images.remotePatterns` in `next.config.mjs` for your CDN)
 - A working contact/lead form under `#contact`
 - Auth + a dashboard for the "List a property" flow
+
+## Authentication API
+
+The app exposes two JSON endpoints:
+
+- `POST /api/register` — accepts `firstName`, `lastName`, `email`, `phone` and `password`.
+- `POST /api/login` — accepts `email` and `password`.
+
+Successful requests return a sanitized `user` object and set an HTTP-only
+`haven_session` cookie. Passwords are hashed with PBKDF2 before storage.
+
+The current user and session store is in memory, so it is suitable for local
+development only and resets when the server restarts. Replace `lib/auth.js`
+with a database-backed store before deploying.
